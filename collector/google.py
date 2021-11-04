@@ -44,6 +44,7 @@ class GooglePlace(object):
         csvWriter = csv.writer(f)
 
         page_number = 0
+        end = 0
         while True:
             try:
                 html = self.driver.page_source
@@ -52,56 +53,61 @@ class GooglePlace(object):
             except:
                 btn = None
 
-            if bool(btn) == True:
-                page_number += 1
-                print(f'\rpage_number : {page_number} page', end='')
+            page_number += 1
+            print(f'\rpage_number : {page_number} page', end='')
 
-                names = []
-                details = []
+            names = []
+            details = []
 
-                place_names = soup.find_all(class_='dbg0pd eDIkBe')
-                place_details = soup.find_all(class_='rllt__details')
-                place_info = zip(place_names, place_details)
+            place_names = soup.find_all(class_='dbg0pd eDIkBe')
+            place_details = soup.find_all(class_='rllt__details')
+            place_info = zip(place_names, place_details)
 
-                for n_idx, d_idx in place_info:
-                    if n_idx.span and d_idx.div:
-                        names.append(n_idx.span.text)
-                        details.append(d_idx.div.text)
-                    else:
-                        pass
-
-                searchList = dict(zip(names, details))
-                for name, detail in searchList.items():
-                    if self.dropna:
-                        if detail.find('·') == -1:
-                            pass
-                        else:
-                            address = detail.split('·')[0]
-                            phone = detail.split('·')[1]
-                    else:
-                        if detail.find('·') == -1:
-                            if detail.startswith('0'):
-                                address = 'null'
-                                phone = detail
-                            else:
-                                address = detail
-                                phone = 'null'
-                        else:
-                            address = detail.split('·')[0]
-                            phone = detail.split('·')[1]
-                    csvWriter.writerow([name, address, phone])
-
-                if self.window:
-                    btn.click()
+            for n_idx, d_idx in place_info:
+                if n_idx.span and d_idx.div:
+                    names.append(n_idx.span.text)
+                    details.append(d_idx.div.text)
                 else:
-                    btn.send_keys(Keys.ENTER)
-                time.sleep(2.5)
-            else:
+                    pass
+
+            searchList = dict(zip(names, details))
+            for name, detail in searchList.items():
+                if self.dropna:
+                    if detail.find('·') == -1:
+                        pass
+                    else:
+                        address = detail.split('·')[0]
+                        phone = detail.split('·')[1]
+                else:
+                    if detail.find('·') == -1:
+                        if detail.startswith('0'):
+                            address = 'null'
+                            phone = detail
+                        else:
+                            address = detail
+                            phone = 'null'
+                    else:
+                        address = detail.split('·')[0]
+                        phone = detail.split('·')[1]
+                csvWriter.writerow([name, address, phone])
+                
+            if end:
                 self.driver.close()
                 break
 
+            if self.window:
+                if bool(btn):
+                    btn.click()
+                else:
+                    end = 1
+            else:
+                if bool(btn):
+                    btn.send_keys(Keys.ENTER)
+                else:
+                    end = 1
+            time.sleep(2.5)
+
         f.close()
-        print(f'\rpage_number : {page_number+1} page', end='')
         print('\ndone')
 
 
