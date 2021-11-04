@@ -8,9 +8,6 @@ import csv
 
 
 class GooglePlace(object):
-  """
-  Google Place HTML data-scraper
-  """
     def __init__(
         self,
         baseUrl="https://www.google.com/search?tbs=lrf:!1m4!1u3!2m2!3m1!1e1!2m1!1e3!3sIAE,lf:1,lf_ui:4&tbm=lcl&sxsrf=AOaemvLlmSgd_57QwWo0ESSFQQZXIXZ1ag:1635680689664&q=",
