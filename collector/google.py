@@ -20,6 +20,11 @@ class GooglePlace(object):
         self.dropna = dropna
 
         if self.window:
+            """
+            Chromedriver Path
+                1. Linux : '/path/to/chromedriver'
+                2. Windows : ex) 'C:\path\to\chromedriver.exe'
+            """
             self.driver = webdriver.Chrome('./chromedriver')
             self.driver.get(self.url)
         else:
@@ -35,8 +40,9 @@ class GooglePlace(object):
             options.add_argument("user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.63 Safari/537.36")
             self.driver = webdriver.Chrome('./chromedriver', chrome_options=options)
             self.driver.get(self.url)
+        self._parse()
 
-    def parse(self):
+    def _parse(self):
         f = open(f'{self.input}.csv', 'w', encoding='utf-8', newline='')
         csvWriter = csv.writer(f)
 
@@ -110,4 +116,3 @@ class GooglePlace(object):
 
 if __name__ == '__main__':
     scraper = GooglePlace(window=True, dropna=True)
-    scraper.parse()
